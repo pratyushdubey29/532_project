@@ -29,3 +29,39 @@ SET     sys.dataset.label = IF((sys.dataset.CancellationCode!='N'),2, IF((sys.da
 select sys.dataset.label, count(sys.dataset.label)
 from sys.dataset
 group by sys.dataset.label;
+
+#Carriers along with the number of flights in highly delayed category 
+select sys.dataset.UniqueCarrier, count(sys.dataset.label)
+from sys.dataset
+where sys.dataset.label=1
+group by sys.dataset.UniqueCarrier;
+
+#Carriers along with the number of flights in Cancelled category 
+select sys.dataset.UniqueCarrier, count(sys.dataset.label)
+from sys.dataset
+where sys.dataset.label=2
+group by sys.dataset.UniqueCarrier;
+
+#Carriers along with the number of flights in Diverted category 
+select sys.dataset.UniqueCarrier, count(sys.dataset.label)
+from sys.dataset
+where sys.dataset.label=3
+group by sys.dataset.UniqueCarrier;
+
+#Carriers and the average delay their flights seems to have
+select sys.dataset.UniqueCarrier, avg(sys.dataset.ArrDelay)
+from sys.dataset
+where sys.dataset.ArrDelay>0 and sys.dataset.CancellationCode='N' and sys.dataset.Diverted=0
+group by sys.dataset.UniqueCarrier;
+
+#Average delay in flights based on the origin of flights
+select sys.dataset.Origin, avg(sys.dataset.ArrDelay)
+from sys.dataset
+where sys.dataset.ArrDelay>0 and sys.dataset.CancellationCode='N' and sys.dataset.Diverted=0
+group by sys.dataset.Origin;
+
+#Average delay in flights based on the final destination of flights
+select sys.dataset.Dest, avg(sys.dataset.ArrDelay)
+from sys.dataset
+where sys.dataset.ArrDelay>0 and sys.dataset.CancellationCode='N' and sys.dataset.Diverted=0
+group by sys.dataset.Dest;
