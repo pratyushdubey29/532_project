@@ -67,4 +67,27 @@ del(dataset)
 numeric_dataset.unpersist()
 dataset.unpersist()
 
+#Query to preprocess the data to get whether the flight is delayed or not, the delay in min (if any), departure time and arrival time in 'hour of day' and the flight distance bucketed with bucket size of distInterval (250). 
+updated_dataset.createOrReplaceTempView("df")
+distInterval = 250
+dfres = spark.sql(""+
+    "select "+
+        "Distance,"+
+        "concat_ws('-', STRING(floor(Distance/{0})*{0}), STRING(floor((Distance/{0}) + 1)*{0})) as DistRange,".format(distInterval)+
+        "CASE WHEN length(CRSDepTime) <= 4 THEN 0 ELSE substring(STRING(CRSDepTime), 1, length(CRSDepTime)-4) END as CRSDeptHr,"+
+        "CASE WHEN length(CRSArrTime) <= 4 THEN 0 ELSE substring(STRING(CRSArrTime), 1, length(CRSArrTime)-4) END as CRSArrHr,"+
+        "CASE WHEN ActualElapsedTime - CRSElapsedTime > 0 THEN 1 ELSE 0 END as Delayed, "+
+        "CASE WHEN ActualElapsedTime - CRSElapsedTime <= 0 THEN 1 ELSE 0 END as OnTime, "+
+        "CASE WHEN ActualElapsedTime - CRSElapsedTime > 0 THEN ActualElapsedTime - CRSElapsedTime ELSE 0 END as Delay "+
+    "from df "+
+    "where (Cancelled == 0) AND (Diverted == 0)".format(distInterval))
+dfres.createOrReplaceTempView("dfres")
+dfres.show(20, truncate=False)
 
+#Query to get percentage of flights delayed distributed over the departure hour of day. 
+hourRes = spark.sql("select CRSDeptHr, sum(Delayed) / (sum(Delayed) + sum(OnTime)) * 100 as DelayedPercentage from dfres group by CRSDeptHr order by DelayedPercentage DESC")
+hourRes.show(24, truncate=False)
+
+#Query to get percentage of flights delayed distributed over the distance buckets. 
+distRes = spark.sql("select DistRange, sum(Delayed) / (sum(Delayed) + sum(OnTime)) * 100 as DelayedPercentage from dfres group by DistRange order by DelayedPercentage DESC")
+distRes.show(truncate=False)
