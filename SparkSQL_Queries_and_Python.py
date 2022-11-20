@@ -67,6 +67,34 @@ del(dataset)
 numeric_dataset.unpersist()
 dataset.unpersist()
 
+updated_dataset.printSchema()
+
+#Loading dataset into MySQL 
+updated_dataset.select(*(col(c) for c in dataset.columns)).write.format("jdbc") \
+.option("url", "jdbc:mysql://localhost:3306/Sys") \
+.option("driver", "com.mysql.jdbc.Driver").option("dbtable", "dataset") \
+.option("user", "root").option("password", "MySQL").save()
+
+#Loading dataset from MySQL (after doing simple anaysis in MySQL)
+updated_dataset = spark.read.format("jdbc") \
+.option("url", "jdbc:mysql://localhost:3306/Sys") \
+.option("driver", "com.mysql.jdbc.Driver").option("dbtable", "dataset") \
+.option("user", "root").option("password", "MySQL").load()
+
+updated_dataset.printSchema()
+
+#Query to get frequency of flights that were diverted each month
+diverted_monthwise = updated_dataset.select("Month","Diverted").where(updated_dataset["Diverted"]==1).groupBy("Month").count()
+diverted_monthwise.sort(diverted_monthwise['count'].desc()).show()
+
+#Query to get frequency of flights that were cancelled each month
+cancelled_monthwise = updated_dataset.select("Month","Cancelled").where(updated_dataset["Cancelled"]==1).groupBy("Month").count()
+cancelled_monthwise.sort(cancelled_monthwise['count'].desc()).show()
+
+#Query to get frequency of flights that were highly delayed each month
+highly_delayed_monthwise = updated_dataset.select("Month","label").where(updated_dataset["label"]==1).groupBy("Month").count()
+highly_delayed_monthwise.sort(highly_delayed_monthwise['count'].desc()).show()
+
 #Query to preprocess the data to get whether the flight is delayed or not, the delay in min (if any), departure time and arrival time in 'hour of day' and the flight distance bucketed with bucket size of distInterval (250). 
 updated_dataset.createOrReplaceTempView("df")
 distInterval = 250
