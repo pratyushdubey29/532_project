@@ -39,6 +39,7 @@ Below are the steps needed to be installed before running this project :
     https://dev.mysql.com/downloads/installer/
     
 #Install MySQL Connector
+    
     https://jar-download.com/artifacts/mysql/mysql-connector-java/5.1.48/source-code
 
 
