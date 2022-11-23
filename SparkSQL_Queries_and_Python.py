@@ -119,3 +119,40 @@ hourRes.show(24, truncate=False)
 #Query to get percentage of flights delayed distributed over the distance buckets. 
 distRes = spark.sql("select DistRange, sum(Delayed) / (sum(Delayed) + sum(OnTime)) * 100 as DelayedPercentage from dfres group by DistRange order by DelayedPercentage DESC")
 distRes.show(truncate=False)
+
+# Starting Data Visualization
+
+df_pandas = updated_dataset.toPandas()
+df_pandas = df_pandas.fillna(0)
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Histograms to represent distribution of each feature 
+for col,num in zip(df_pandas.describe().columns, range(1, len(df_pandas.columns))):
+    plt.hist(df_pandas[col], bins =20)
+    plt.grid(False)
+    plt.title(col.upper())
+    plt.tight_layout()
+    plt.show()
+
+# Bar plot representing frequency of flights cancelled monthwise
+df_pandas[["Cancelled","Month"]].where(df_pandas["Cancelled"]==1).groupby("Month").count().plot(kind='bar',legend=False, ylabel="Number of Cancelled flights")
+
+# Bar plot representing frequency of flights diverted monthwise
+df_pandas[["Diverted","Month"]].where(df_pandas["Diverted"]==1).groupby("Month").count().plot(kind='bar',legend=False, ylabel="Number of Diverted flights")
+
+# Bar plot representing frequency of highly delayed flights monthwise
+df_pandas[["label","Month"]].where(df_pandas["label"]==1).groupby("Month").count().plot(kind='bar',legend=False, ylabel="Number of highly delayed flights")
+
+# Visualization of distribution of flights being cancelled or not 
+df_pandas["Cancelled"].value_counts().plot(kind="bar", xlabel="0 -Not cancelled 1-Cancelled", ylabel="Frequency")
+
+# If a flight is cancelled what is the distribution of the cancellation code that is the reason of cancellation
+df_pandas[["CancellationCode", "Cancelled"]].where(df_pandas["Cancelled"]==1).groupby("CancellationCode").count().plot(kind="bar", legend=False, ylabel="Frequency")
+
+# Distribution of diverted flights
+df_pandas["Diverted"].value_counts().plot(kind="bar", xlabel="0 -Not diverted 1-diverted", ylabel="Frequency")
+
+# Visualization of the assmebled label column 
+df_pandas["label"].value_counts().plot(kind="bar", xlabel="0-Slightly delayed 1-highly delayed 2-cancelled 3-diverted", ylabel="Frequency")
