@@ -156,3 +156,31 @@ df_pandas["Diverted"].value_counts().plot(kind="bar", xlabel="0 -Not diverted 1-
 
 # Visualization of the assmebled label column 
 df_pandas["label"].value_counts().plot(kind="bar", xlabel="0-Slightly delayed 1-highly delayed 2-cancelled 3-diverted", ylabel="Frequency")
+
+# Bar plot to visualize how many flights were highly delayed for each carrier flight
+df_pandas[["label","UniqueCarrier"]].where(df_pandas["label"]==1).groupby("UniqueCarrier").count().plot(kind='bar', legend=False, ylabel='Number of highly delyaed flights')
+
+# Bar plot to visualize how many flights were cancelled for each carrier flight
+df_pandas[["label","UniqueCarrier"]].where(df_pandas["label"]==2).groupby("UniqueCarrier").count().plot(kind='bar', legend=False, ylabel='Number of Cancelled flights')
+
+# Bar plot to visualize how many flights were diverted for each carrier flight
+df_pandas[["label","UniqueCarrier"]].where(df_pandas["label"]==3).groupby("UniqueCarrier").count().plot(kind='bar', legend=False, ylabel='Number of diverted flights')
+
+# Avergae delay caused by each carrier flight
+df_pandas[["ArrDelay","UniqueCarrier"]].where(df_pandas["label"]==1).groupby("UniqueCarrier").mean().plot(kind='bar', legend=False, ylabel='Average delay in highly delayed flights')
+
+# Average delay caused by flights when grouped together based on the origin airport 
+df_pandas[["ArrDelay","Origin"]].where(df_pandas["label"]==1).groupby("Origin").mean()[:10].plot(kind='bar', legend=False, ylabel='Average delay')
+
+# Average delay caused by flights when grouped together based on the destination airport 
+df_pandas[["ArrDelay","Dest"]].where(df_pandas["label"]==1).groupby("Dest").mean()[:10].plot(kind='bar', legend=False, ylabel='Average delay')
+
+# Frequency of flights that were diverted with respect to day of the week
+df_pandas[["DayOfWeek","Diverted"]].where(df_pandas["Diverted"]==1).groupby("DayOfWeek").count().plot(kind='bar', legend=False, ylabel='Number of flights diverted')
+
+# Frequency of flights that were cancelled with respect to day of the week
+df_pandas[["DayOfWeek","Cancelled"]].where(df_pandas["Cancelled"]==1).groupby("DayOfWeek").count().plot(kind='bar', legend=False, ylabel='Number of flights cancelled')
+
+# Frequency of flights that were labelled as highly delayed with respect to day of the week
+df_pandas[["DayOfWeek","label"]].where(df_pandas["label"]==1).groupby("DayOfWeek").count().plot(kind='bar', legend=False, ylabel='Number of highly delayed flights')
+
