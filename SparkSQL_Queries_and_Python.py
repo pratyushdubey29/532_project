@@ -184,3 +184,67 @@ df_pandas[["DayOfWeek","Cancelled"]].where(df_pandas["Cancelled"]==1).groupby("D
 # Frequency of flights that were labelled as highly delayed with respect to day of the week
 df_pandas[["DayOfWeek","label"]].where(df_pandas["label"]==1).groupby("DayOfWeek").count().plot(kind='bar', legend=False, ylabel='Number of highly delayed flights')
 
+# Classification of flights based on the Original Departure Time
+fig, ax = plt.subplots(figsize = (15,10))
+ax.hist([df_pandas["CRSDepTime"], df_pandas["CRSDepTime"].where(df_pandas["label"]==1),df_pandas["CRSDepTime"].where(df_pandas["Cancelled"]==1), df_pandas["CRSDepTime"].where(df_pandas["Diverted"]==1)], bins = 10, label = ["all flights","highly delayed", "cancelled", "diverted"])
+plt.legend()
+
+# Classification of flights based on the scheduled month
+fig, ax = plt.subplots(figsize = (15,10))
+ax.hist([df_pandas["Month"], df_pandas["Month"].where(df_pandas["label"]==1),df_pandas["Month"].where(df_pandas["Cancelled"]==1), df_pandas["Month"].where(df_pandas["Diverted"]==1)], bins = 10, label = ["all flights","highly delayed", "cancelled", "diverted"])
+plt.legend()
+
+# Classification of flights based on the distance between origin and destination
+fig, ax = plt.subplots(figsize = (15,10))
+ax.hist([df_pandas["Distance"], df_pandas["Distance"].where(df_pandas["label"]==1),df_pandas["Distance"].where(df_pandas["Cancelled"]==1), df_pandas["Distance"].where(df_pandas["Diverted"]==1)], bins = 10, label = ["all flights","highly delayed", "cancelled", "diverted"])
+plt.legend()
+
+# How much Delay in minutes was caused by each factor 
+df_pandas['total_delay'] = (df_pandas['CarrierDelay'] + df_pandas['WeatherDelay'] + df_pandas['NASDelay'] + df_pandas['SecurityDelay'] + df_pandas['LateAircraftDelay'])
+carrier_group = df_pandas['CarrierDelay'].groupby(df_pandas['UniqueCarrier']).mean()
+weather_group = df_pandas['WeatherDelay'].groupby(df_pandas['UniqueCarrier']).mean()
+nas_group = df_pandas['NASDelay'].groupby(df_pandas['UniqueCarrier']).mean()
+security_group = df_pandas['SecurityDelay'].groupby(df_pandas['UniqueCarrier']).mean()
+late_group = df_pandas['LateAircraftDelay'].groupby(df_pandas['UniqueCarrier']).mean()
+w_bottom = carrier_group.values
+n_bottom = w_bottom + weather_group.values
+s_bottom = n_bottom + nas_group.values
+l_bottom = s_bottom + security_group.values
+x = carrier_group.index.values
+fig, ax = plt.subplots(figsize = (15,10))
+ax.set_xticks(np.arange(len(x)))
+ax.bar(np.arange(len(x)),carrier_group.values, label='Carrier Delay')
+ax.bar(np.arange(len(x)),weather_group.values, bottom=w_bottom, label='Weather Delay')
+ax.bar(np.arange(len(x)),nas_group.values, bottom=n_bottom, label='NAS Delay')
+ax.bar(np.arange(len(x)),security_group.values, bottom=s_bottom, label='Security Delay')
+ax.bar(np.arange(len(x)),late_group.values, bottom=l_bottom, label='Late Aircraft Delay')
+ax.set_xlabel('Aircraft Carrier Code')
+ax.set_ylabel('Departure Delay in minutes')
+plt.legend()
+plt.show()
+
+# Frequency of flights cancelled due to different cancellation codes
+cancelled_group = df_pandas[df_pandas["Cancelled"]==1].groupby(['UniqueCarrier','CancellationCode']).size().reindex(fill_value=0.0).unstack()
+cg = cancelled_group.fillna(0)
+b_bottom = cg.loc[:,'A'].values
+c_bottom = b_bottom + cg.loc[:,'B'].values
+d_bottom = c_bottom + cg.loc[:,'B'].values
+x = cg.loc[:,'A'].index.values
+fig, ax = plt.subplots(figsize = (15,10))
+ax.set_xticks(np.arange(len(x)))
+ax.bar(np.arange(len(x)),cg.loc[:,'A'].values, align='center', label='Carrier')
+ax.bar(np.arange(len(x)),cg.loc[:,'B'].values, align='center', bottom=b_bottom, label='Weather')
+ax.bar(np.arange(len(x)),cg.loc[:,'C'].values, align='center', bottom=c_bottom, label='NAS')
+ax.set_xlabel('Aircraft Carrier Code')
+ax.set_ylabel('Number of Cancellations')
+plt.legend()
+plt.show()
+
+# Correlation heatmap for different numeric features 
+import seaborn as sns
+numeric_columns_for_heatmap = []
+for col in df_pandas.columns:
+    if df_pandas[col].dtype != "object":
+        numeric_columns_for_heatmap.append(col)
+fig, ax = plt.subplots(figsize=(20,20))     
+sns.heatmap(df_pandas[numeric_columns_for_heatmap].corr(), cmap = 'coolwarm', linewidths = 0.5, linecolor = 'black', ax=ax)
