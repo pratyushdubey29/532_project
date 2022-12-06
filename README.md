@@ -1,61 +1,61 @@
 This Repo consist of code and documentation needed for successfully running the project End to End.
 Below are the steps needed to be installed before running this project : 
 
-1) Install Spark / PySpark: (Assuming Mac OS)
+# 1) Install Spark / PySpark: (Assuming Mac OS)
 
-# Install Homebrew
+### Install Homebrew
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-# Set brew to Path
+### Set brew to Path
     echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> /Users/admin/.zprofile
     eval "$(/opt/homebrew/bin/brew shellenv)"
 
-# Install OpenJDK 11
+### Install OpenJDK 11
     brew install openjdk@11
 
-# Install Scala (optional)
+### Install Scala (optional)
     brew install scala
 
-# install Python
+### Install Python
     brew install python
 
-# Install Apache Spark
+### Install Apache Spark
     brew install apache-spark
 
 
-2) Install machine learning libraries (Assuming already configured anaconda installed)
+# 2) Install machine learning libraries (Assuming already configured anaconda installed)
 
-# Install Pandas 
+### Install Pandas 
     conda install pandas
 
-# Install Scikit-learn 
+### Install Scikit-learn 
     pip install -U scikit-learn
 
-# Install pytorch 
+### Install pytorch 
     Please refer website : https://pytorch.org/get-started/locally/
 
-3) Installing of MySQL and the related connectors
+# 3) Installing of MySQL and the related connectors
 
-# Install MySQL
+### Install MySQL
     https://dev.mysql.com/downloads/installer/
     
-# Install MySQL Connector
+### Install MySQL Connector
     https://jar-download.com/artifacts/mysql/mysql-connector-java/5.1.48/source-code
 
-4) Required changes in the Python file:  
+# 4) Required changes in the Python file:  
   
-  # Spark Session Inialization:
+  ### Spark Session Inialization:
             .config("spark.driver.extraClassPath","C:/Users/AnshumaanChauhan/Documents/spark-3.3.0-bin-hadoop3/spark-3.3.0-bin-hadoop3/jars/mysql-connector-java-5.1.48.jar")
   
   Here we need to change specified in this config attribute path to the Path in the system 
   
-  # Dataset Load Statement:
+  ### Dataset Load Statement:
         dataset = spark.read.csv('C:\\Users\AnshumaanChauhan\\Documents\\Systems for DS Umass\\Project\\archive (5)\\DelayedFlights.csv',
                          header=True)
   
   Change the path specified in the load instruction to the path where dataset is stored in the system 
   
-  # Loading dataset into and from MySQL 
+  ### Loading dataset into and from MySQL 
     updated_dataset.select(*(col(c) for c in dataset.columns)).write.format("jdbc") \
     .option("url", "jdbc:mysql://localhost:3306/Sys") \
     .option("driver", "com.mysql.jdbc.Driver").option("dbtable", "dataset") \
