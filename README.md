@@ -19,7 +19,6 @@ Below are the steps needed to be installed before running this project :
 # install Python
     brew install python
 
-
 # Install Apache Spark
     brew install apache-spark
 
@@ -35,12 +34,33 @@ Below are the steps needed to be installed before running this project :
 # Install pytorch 
     Please refer website : https://pytorch.org/get-started/locally/
 
+3) Installing of MySQL and the related connectors
+
 # Install MySQL
     https://dev.mysql.com/downloads/installer/
     
 # Install MySQL Connector
     https://jar-download.com/artifacts/mysql/mysql-connector-java/5.1.48/source-code
 
-
-
+4) Required changes in the Python file:  
+   # Spark Session Inialization:
+            .config("spark.driver.extraClassPath","C:/Users/AnshumaanChauhan/Documents/spark-3.3.0-bin-hadoop3/spark-3.3.0-bin-hadoop3/jars/mysql-connector-java-5.1.48.jar")
+  Here we need to change specified in this config attribute path to the Path in the system 
+  
+  # Dataset Load Statement:
+        dataset = spark.read.csv('C:\\Users\AnshumaanChauhan\\Documents\\Systems for DS Umass\\Project\\archive (5)\\DelayedFlights.csv',
+                         header=True)
+   Change the path specified in the load instruction to the path where dataset is stored in the system 
+ # Loading dataset into and from MySQL 
+    updated_dataset.select(*(col(c) for c in dataset.columns)).write.format("jdbc") \
+    .option("url", "jdbc:mysql://localhost:3306/Sys") \
+    .option("driver", "com.mysql.jdbc.Driver").option("dbtable", "dataset") \
+    .option("user", "root").option("password", "MySQL").save()
+    
+    updated_dataset = spark.read.format("jdbc") \
+    .option("url", "jdbc:mysql://localhost:3306/Sys") \
+    .option("driver", "com.mysql.jdbc.Driver").option("dbtable", "dataset") \
+    .option("user", "root").option("password", "MySQL").load()
+    
+  In these statements change the value of "user" and "password" to the values specified during initializing of MySQL on the system 
  
