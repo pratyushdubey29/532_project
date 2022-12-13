@@ -17,15 +17,18 @@ Below are the steps needed to be installed before running this project :
     brew install scala
 
 ### Install Python
-    brew install python
-    
-    For Windows - install Anaconda (will automatically install Python) 
-    https://docs.anaconda.com/anaconda/install/index.html
+    brew install python 
 
 ### Install Apache Spark
     brew install apache-spark
-    https://spark.apache.org/downloads.html  (Download link for OS - Windows, Linux, etc.)
+    
+# Install Spark/PySpark  (Download links/documentations for OS - Windows, Linux, etc.)    
 
+### Install Spark
+    https://spark.apache.org/downloads.html 
+
+### Install Python/Anaconda
+    https://docs.anaconda.com/anaconda/install/index.html
 
 # 2) Install machine learning libraries (Assuming already configured anaconda installed)
 
