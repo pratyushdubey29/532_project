@@ -18,9 +18,13 @@ Below are the steps needed to be installed before running this project :
 
 ### Install Python
     brew install python
+    
+    For Windows - install Anaconda (will automatically install Python) 
+    https://docs.anaconda.com/anaconda/install/index.html
 
 ### Install Apache Spark
     brew install apache-spark
+    https://spark.apache.org/downloads.html  (Download link for OS - Windows, Linux, etc.)
 
 
 # 2) Install machine learning libraries (Assuming already configured anaconda installed)
@@ -68,7 +72,8 @@ Below are the steps needed to be installed before running this project :
     
   In these statements change the value of "user" and "password" to the values specified during initializing of MySQL on the system 
 
-###  - MySQLQueries.sql file constits of the MySQL Analysis
+###  File Description and Content 
+     - MySQLQueries.sql file constits of the MySQL Analysis
      - SparkSQL_Queries_and_Python.py contains the code for PySpark analysis and visualizations using Matplotlib
      - models_for_delay_prediction.py file has the Machine Learning component of the Project 
 
